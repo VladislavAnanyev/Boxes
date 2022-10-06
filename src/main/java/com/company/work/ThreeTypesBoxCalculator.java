@@ -6,35 +6,30 @@ import java.util.List;
 /**
  * Класс для нахождения способов купить ровно productQuantity килограмм товара в трех ящиках по a, b, c килограмм
  */
-public class ThreeTypesBoxCalculator implements BoxCombinationsAlgorithm {
-
-    private int a;
-    private int b;
-    private int c;
-    private int productQuantity;
+public class ThreeTypesBoxCalculator implements BoxCalculator {
 
     /**
      *
-     * @param values - массив содержащий данные о товаре:
-     *               в первых трех элементах - a, b, c килограмм товара в каждом из трех ящиков
-     *               в четвертом элементе - требуемое количество товара для покупки
+     * @param products - модель содержащая данные о килограммах товара в каждом из трех ящиков
+     *                 и требуемое количество товара для покупки
      */
-    public ThreeTypesBoxCalculator(int[] values) throws IllegalArgumentException {
-        if (values.length != 4) {
-            throw new IllegalArgumentException("Input must contain four numbers");
+    public BoxCombinationsResult computeCombinations(Products products) {
+
+        int[] quantityInEachOfTheThreeBoxes = products.getProductsQuantityInEachBox();
+
+        if (quantityInEachOfTheThreeBoxes.length != 3 || products.getTotalProducts() == null) {
+            throw new IllegalArgumentException("Information on three boxes and total amount of products must be provided");
         }
 
-        if (values[0] <= 0 || values[1] <= 0 || values[2] <= 0 || values[3] <= 0) {
+        int a = quantityInEachOfTheThreeBoxes[0];
+        int b = quantityInEachOfTheThreeBoxes[1];
+        int c = quantityInEachOfTheThreeBoxes[2];
+        int productQuantity = products.getTotalProducts();
+
+        if (a <= 0 || b <= 0 || c <= 0 || productQuantity <= 0) {
             throw new IllegalArgumentException("All input parameters must be greater than zero");
         }
 
-        this.a = values[0];
-        this.b = values[1];
-        this.c = values[2];
-        this.productQuantity = values[3];
-    }
-
-    public BoxCombinationsResult compute() {
         List<List<Integer>> result = new ArrayList<>();
         for (int i = 0; i < productQuantity / a + 1; i++) {
             for (int j = 0; j < productQuantity / b + 1; j++) {
@@ -44,41 +39,10 @@ public class ThreeTypesBoxCalculator implements BoxCombinationsAlgorithm {
                 }
             }
         }
+
         BoxCombinationsResult boxCombinationsResult = new BoxCombinationsResult();
         boxCombinationsResult.setPossibleCombinations(result.size());
         boxCombinationsResult.setCombinations(result);
         return boxCombinationsResult;
-    }
-
-    public int getA() {
-        return a;
-    }
-
-    public void setA(int a) {
-        this.a = a;
-    }
-
-    public int getB() {
-        return b;
-    }
-
-    public void setB(int b) {
-        this.b = b;
-    }
-
-    public int getC() {
-        return c;
-    }
-
-    public void setC(int c) {
-        this.c = c;
-    }
-
-    public int getProductQuantity() {
-        return productQuantity;
-    }
-
-    public void setProductQuantity(int productQuantity) {
-        this.productQuantity = productQuantity;
     }
 }
