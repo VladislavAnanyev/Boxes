@@ -8,15 +8,15 @@ public class Products {
         return totalProducts;
     }
 
+    public void setTotalProducts(int totalProducts) {
+        this.totalProducts = totalProducts;
+    }
+
     public int[] getProductsQuantityInEachBox() {
         return productsQuantityInEachBox;
     }
 
     public void setProductsQuantityInEachBox(int[] productsQuantityInEachBox) {
         this.productsQuantityInEachBox = productsQuantityInEachBox;
-    }
-
-    public void setTotalProducts(int totalProducts) {
-        this.totalProducts = totalProducts;
     }
 }

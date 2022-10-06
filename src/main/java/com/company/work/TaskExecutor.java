@@ -68,6 +68,10 @@ public class TaskExecutor {
         write(this.result);
     }
 
+    public BoxCombinationsResult getResult() {
+        return result;
+    }
+
     private Products findOutProductsInfo() throws IOException {
         String data = reader.read();
         int[] parsedValues = inputParser.parse(data);
@@ -90,10 +94,6 @@ public class TaskExecutor {
                     outputFormatter.format(result)
             );
         }
-    }
-
-    public BoxCombinationsResult getResult() {
-        return result;
     }
 
     private void processArguments(String[] args) {

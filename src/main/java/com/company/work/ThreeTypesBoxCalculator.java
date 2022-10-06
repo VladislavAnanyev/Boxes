@@ -9,7 +9,6 @@ import java.util.List;
 public class ThreeTypesBoxCalculator implements BoxCalculator {
 
     /**
-     *
      * @param products - модель содержащая данные о килограммах товара в каждом из трех ящиков
      *                 и требуемое количество товара для покупки
      */
