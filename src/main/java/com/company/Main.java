@@ -7,9 +7,9 @@ import java.io.IOException;
 public class Main {
 
     public static void main(String[] args) {
-        TaskExecutor taskExecutor = new TaskExecutor();
+        TaskExecutor taskExecutor = new TaskExecutor(args);
         try {
-            taskExecutor.run(args);
+            taskExecutor.run();
         } catch (IllegalArgumentException e) {
             System.out.println(
                     "Data processing error: " + e.getClass().getSimpleName() + ": " + e.getMessage()
@@ -20,7 +20,6 @@ public class Main {
             );
         }
     }
-
 }
 
 

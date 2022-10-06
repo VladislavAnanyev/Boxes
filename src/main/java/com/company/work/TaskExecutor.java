@@ -12,22 +12,31 @@ import com.company.output.print.Printer;
 import java.io.IOException;
 
 public class TaskExecutor {
+
     private Reader reader;
-    private String inputData;
     private InputParser inputParser;
-    private BoxCombinationsAlgorithm boxCombinationsAlgorithm;
-    private BoxCombinationsResult result;
+    private BoxCalculator calculator;
     private OutputFormatter outputFormatter;
     private Printer printer;
+    private BoxCombinationsResult result;
 
-    public TaskExecutor() {
-        this.reader = new FileReader();
+    public TaskExecutor(String[] args) {
+        processArguments(args);
+
+        if (this.reader == null) {
+            this.reader = new FileReader();
+        }
+
+        if (this.printer == null) {
+            this.printer = new FilePrinter();
+        }
+
         this.inputParser = new CommaInputParser();
+        this.calculator = new ThreeTypesBoxCalculator();
         this.outputFormatter = new SpaceOutputFormatter();
-        this.printer = new FilePrinter();
     }
 
-    public TaskExecutor(Reader reader, InputParser inputParser, BoxCombinationsAlgorithm boxCombinationsAlgorithm,
+    public TaskExecutor(Reader reader, InputParser inputParser, BoxCalculator calculator,
                         OutputFormatter outputFormatter, Printer printer) {
 
         if (reader == null) {
@@ -42,43 +51,49 @@ public class TaskExecutor {
             throw new IllegalArgumentException("outputFormatter required when printer is present");
         }
 
+        if (calculator == null) {
+            throw new IllegalArgumentException("calculator required");
+        }
+
         this.reader = reader;
         this.inputParser = inputParser;
-        this.boxCombinationsAlgorithm = boxCombinationsAlgorithm;
+        this.calculator = calculator;
         this.outputFormatter = outputFormatter;
         this.printer = printer;
     }
 
-    public TaskExecutor(String inputData, BoxCombinationsAlgorithm boxCombinationsAlgorithm,
-                        BoxCombinationsResult result, OutputFormatter outputFormatter, Printer printer) {
-
-        if (inputData == null) {
-            throw new IllegalArgumentException("inputData required");
-        }
-
-        if (printer != null && outputFormatter == null) {
-            throw new IllegalArgumentException("outputFormatter required when printer is present");
-        }
-
-        this.inputData = inputData;
-        this.boxCombinationsAlgorithm = boxCombinationsAlgorithm;
-        this.result = result;
-        this.outputFormatter = outputFormatter;
-        this.printer = printer;
-    }
-
-    public void run(String[] args) throws IOException {
-        this.processArguments(args);
-        this.readInputData();
-        int[] parsedData = this.parseInputData(this.inputData);
-        this.compute(
-                boxCombinationsAlgorithm == null ? new ThreeTypesBoxCalculator(parsedData) : boxCombinationsAlgorithm
-        );
-        this.print(this.result);
+    public void run() throws IOException {
+        Products products = findOutProductsInfo();
+        this.result = calculator.computeCombinations(products);
+        write(this.result);
     }
 
     public BoxCombinationsResult getResult() {
         return result;
+    }
+
+    private Products findOutProductsInfo() throws IOException {
+        String data = reader.read();
+        int[] parsedValues = inputParser.parse(data);
+        return mapToProducts(parsedValues);
+    }
+
+    private Products mapToProducts(int[] parsedValues) {
+        Products products = new Products();
+        products.setTotalProducts(parsedValues[parsedValues.length - 1]);
+
+        int[] quantitiesInEachBox = new int[parsedValues.length - 1];
+        System.arraycopy(parsedValues, 0, quantitiesInEachBox, 0, parsedValues.length - 1);
+        products.setProductsQuantityInEachBox(quantitiesInEachBox);
+        return products;
+    }
+
+    private void write(BoxCombinationsResult result) throws IOException {
+        if (printer != null) {
+            printer.print(
+                    outputFormatter.format(result)
+            );
+        }
     }
 
     private void processArguments(String[] args) {
@@ -89,30 +104,6 @@ public class TaskExecutor {
             if (args[i].equals("-out")) {
                 this.printer = new FilePrinter(args[i + 1]);
             }
-        }
-    }
-
-    private void readInputData() throws IOException {
-        if (reader != null) {
-            this.inputData = this.reader.read();
-        }
-    }
-
-    private int[] parseInputData(String inputData) {
-        return inputParser.parse(inputData);
-    }
-
-    private void compute(BoxCombinationsAlgorithm algorithm) {
-        this.boxCombinationsAlgorithm = algorithm;
-        this.result = this.boxCombinationsAlgorithm.compute();
-    }
-
-    private void print(BoxCombinationsResult result) throws IOException {
-        if (printer != null) {
-            this.printer.print(
-                    this.outputFormatter
-                            .format(result)
-            );
         }
     }
 }

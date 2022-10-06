@@ -5,6 +5,7 @@ import com.company.input.parse.CommaInputParser;
 import com.company.input.parse.InputParser;
 import com.company.output.format.OutputFormatter;
 import com.company.output.format.SpaceOutputFormatter;
+import com.company.work.Products;
 import com.company.work.ThreeTypesBoxCalculator;
 import com.company.work.BoxCombinationsResult;
 import org.junit.jupiter.api.Test;
@@ -17,8 +18,13 @@ class MainTest {
 
     @Test
     public void calculateTest() {
-        ThreeTypesBoxCalculator threeTypesBoxCalculator = new ThreeTypesBoxCalculator(new int[]{15, 17, 21, 185});
-        BoxCombinationsResult calculate = threeTypesBoxCalculator.compute();
+        Products products = new Products();
+        products.setTotalProducts(185);
+        products.setProductsQuantityInEachBox(new int[]{15, 17, 21});
+
+        ThreeTypesBoxCalculator threeTypesBoxCalculator = new ThreeTypesBoxCalculator();
+        BoxCombinationsResult calculate = threeTypesBoxCalculator.computeCombinations(products);
+
         List<List<Integer>> actual = calculate.getCombinations();
         List<List<Integer>> expected = List.of(
                 List.of(0, 1, 8),
@@ -34,7 +40,11 @@ class MainTest {
     @Test
     public void calculateWithWrongDataTest() {
         try {
-            new ThreeTypesBoxCalculator(new int[]{15, 17, 21, 185, 1});
+            Products products = new Products();
+            products.setTotalProducts(185);
+            products.setProductsQuantityInEachBox(new int[]{15, 17, 21, 185});
+
+            new ThreeTypesBoxCalculator().computeCombinations(products);
             throw new RuntimeException();
         } catch (IllegalArgumentException e) {
             assertNotEquals("", e.getMessage());
